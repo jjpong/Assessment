@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台灣學校地圖 (單一顯目標示置頂)</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <script>
+        // 初始化地圖，設定中心點在台灣，並設定縮放等級
+        var map = L.map('map').setView([23.973875, 120.982025], 8);
+
+        // 加入圖資
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // 建立一個更顯目的紅色圖標 (只給同德國中使用)
+        var redIcon = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        // 學校資料陣列
+        var schools = [
+            {name: "臺北市 龍山國中", lat: 25.0361, lng: 121.505},
+            {name: "屏東縣 明正國中", lat: 22.681, lng: 120.493},
+            {name: "臺北市 誠正國中", lat: 25.054, lng: 121.599},
+            {name: "桃園市 建國國中", lat: 24.989, lng: 121.319},
+            {name: "桃園市 會稽國中", lat: 25.018, lng: 121.320},
+            {name: "桃園市 平興國中", lat: 24.949, lng: 121.205},
+            {name: "彰化縣 彰安國中", lat: 24.083, lng: 120.537},
+            {name: "宜蘭縣 宜蘭國中", lat: 24.761, lng: 121.758},
+            {name: "新北市 康橋國際學校新店校區", lat: 24.957, lng: 121.528},
+            {name: "嘉義縣 民和國中", lat: 23.447, lng: 120.528},
+            {name: "桃園市 同德國中", lat: 25.013, lng: 121.303}
+        ];
+
+        // 遍歷學校資料，在地圖上加上標記
+        schools.forEach(function(school) {
+            var marker;
+            // 判斷是否為同德國中，並給予不同的圖標和屬性
+            if (school.name === "桃園市 同德國中") {
+                // 如果是同德國中，使用紅色圖標，並設定 zIndexOffset
+                marker = L.marker([school.lat, school.lng], {
+                    icon: redIcon,
+                    zIndexOffset: 1000 // 設定一個較大的 z-index，確保圖層在最上方
+                }).addTo(map);
+            } else {
+                // 其他學校，使用預設圖標
+                marker = L.marker([school.lat, school.lng]).addTo(map);
+            }
+            // 為所有標記都綁定彈出視窗
+            marker.bindPopup("<b>" + school.name + "</b>");
+        });
+
+    </script>
+
+</body>
+</html>
